@@ -7,10 +7,10 @@ class VDSR(nn.Module):
         assert n_layers >= 2
         self.n_layers = n_layers - 2
         self.skip_connection = skip_connection
-        self.input = nn.Conv2d(1, n_channels, 3, padding='same')
-        self.hidden_conv = nn.Conv2d(n_channels, n_channels, 3, padding='same')
+        self.input = nn.Conv2d(1, n_channels, 3, padding="same")
+        self.hidden_conv = nn.Conv2d(n_channels, n_channels, 3, padding="same")
         self.relu = nn.ReLU()
-        self.output = nn.Conv2d(n_layers, 1, 3, padding='same')
+        self.output = nn.Conv2d(n_layers, 1, 3, padding="same")
 
     def forward(self, x):
         ilr = x.copy()
