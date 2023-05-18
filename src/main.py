@@ -3,10 +3,16 @@ from torch.nn import Sequential
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import lightning.pytorch as pl
+import threading
+import os
 
 from LitDenoiser import LitDenoiser
 from DenoiserDataset import DenoiserDataset
 from VDSR import VDSR
+
+
+def launchTensorBoard():
+    os.system('tensorboard --logdir=..')
 
 
 # optimizations
@@ -26,5 +32,7 @@ model = VDSR(2, 3, 8)
 denoiser = LitDenoiser(denoiser=model)
 
 # training
-trainer = pl.Trainer(max_epochs=1, log_every_n_steps=10)
+t = threading.Thread(target=launchTensorBoard, args=([]))
+t.start()
+trainer = pl.Trainer(max_epochs=10, log_every_n_steps=10)
 trainer.fit(model=denoiser, train_dataloaders=dataloader)
