@@ -5,16 +5,18 @@ import os
 
 class DenoiserDataset(Dataset):
     def __init__(self, data_path, noise, transform=None):
+        super().__init__()
+        extensions = [".png", ".jpg", ".jpeg"]
         self.paths = [
             os.path.join(data_path, p)
             for p in os.listdir(data_path)
-            if os.path.isfile(os.path.join(data_path, p))
+            if os.path.splitext(p)[1] in extensions
         ]
         self.noise = noise
         self.transform = transform
 
     def __getitem__(self, idx):
-        hr = read_image(self.paths(idx))
+        hr = read_image(self.paths[idx]).float()
         if self.transform:
             hr = self.transform(hr)
 
