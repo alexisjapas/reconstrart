@@ -12,9 +12,8 @@ class LitDenoiser(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         z = self.denoiser(x)
-        print(f"min: {z.min()} max: {z.max()}")
         loss = torch.nn.functional.mse_loss(z, y)
-        self.log("train_loss", loss, on_step=False, on_epoch=True)
+        self.log("train_loss", loss, on_step=True, on_epoch=False)
 
         return loss
 
@@ -41,8 +40,16 @@ class LitDenoiser(pl.LightningModule):
         examples = make_grid([hr, ilr, out, diff])
         self.logger.experiment.add_image("examples", examples, self.current_epoch)
 
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        z = self.denoiser(x)
+        loss = torch.nn.functional.mse_loss(z, y)
+        self.log("test_loss", loss, on_step=False, on_epoch=True)
+
+        return loss
+
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        optimizer = torch.optim.SGD(self.parameters(), lr=1e-2)
         scheduler = torch.optim.lr_scheduler.StepLR(
             optimizer=optimizer, step_size=20, gamma=0.1
         )
